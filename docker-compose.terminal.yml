@@ -1,0 +1,43 @@
+# SEED Labs XSS Terminal Environment
+# Provides real Ubuntu container with tools for terminal-based lab work
+
+services:
+  # Lab Terminal Container - real Ubuntu shell
+  lab-terminal:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: xss-lab-terminal
+    container_name: xss-lab-terminal
+    command: ["sleep", "infinity"]
+    networks:
+      - lab-network
+    environment:
+      - TERM=xterm-256color
+
+  # Node.js Backend - WebSocket server for terminal
+  terminal-backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+      target: terminal
+    image: xss-lab-terminal-backend
+    container_name: xss-terminal-backend
+    ports:
+      - "3001:3001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - lab-terminal
+    networks:
+      - lab-network
+    environment:
+      - CONTAINER_NAME=xss-lab-terminal
+      - ELGG_PROXY_TARGET=http://elgg:80
+      - TERMINAL_HOST=0.0.0.0
+    command: node terminal-server.js
+
+networks:
+  lab-network:
+    external: true
+    name: xss-network-${DEPLOYMENT_ENV:-local}

@@ -1,0 +1,89 @@
+# Git Ignore File for XSS Lab
+
+# Environment files (keep only the template)
+.env
+.env.*
+!.env.example
+
+# Node modules
+node_modules/
+npm-debug.log*
+npm-error.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+out/
+
+# Dependencies
+yarn.lock
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+junit.xml
+
+# Certificates
+certs/*.pem
+certs/*.key
+certs/*.crt
+!certs/.gitkeep
+nginx/certs/*
+!nginx/certs/.gitkeep
+
+# Cloud credentials
+*-credentials.json
+service-account*.json
+*.p8
+*.pfx
+
+# OS
+.AppleDouble
+.LSOverride
+*.sos
+
+# Certificates (let's encrypt)
+/etc/letsencrypt/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Keep the safe environment template
+!.env.example

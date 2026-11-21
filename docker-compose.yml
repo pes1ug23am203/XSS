@@ -1,0 +1,290 @@
+# Cloud-Ready XSS Lab Multi-Student Environment
+# Machine-Independent Configuration
+
+services:
+  # Nginx Reverse Proxy - routes requests to student backends
+  nginx:
+    image: nginx:${NGINX_VERSION:-alpine}
+    container_name: xss-lab-nginx-${DEPLOYMENT_ENV:-local}
+    ports:
+      - "${NGINX_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    environment:
+      - NGINX_WORKER_PROCESSES=${NGINX_WORKER_PROCESSES:-auto}
+      - NGINX_WORKER_CONNECTIONS=${NGINX_WORKER_CONNECTIONS:-1024}
+      - RATE_LIMIT_ZONE_SIZE=${RATE_LIMIT_ZONE_SIZE:-10m}
+      - RATE_LIMIT_PER_IP=${RATE_LIMIT_PER_IP:-100r/s}
+      - DEPLOYMENT_ENV=${DEPLOYMENT_ENV:-local}
+    depends_on:
+      - backend-student1
+      - backend-student2
+      - backend-student3
+      - backend-student4
+      - backend-student5
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.xsslab.component=nginx"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+  # Student 1 Backend Container
+  backend-student1:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+      target: app
+    image: xss-lab-backend:${APP_VERSION:-1.0.0}
+    container_name: xss-lab-backend-student1-${DEPLOYMENT_ENV:-local}
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=5000
+      - STUDENT_ID=student1
+      - STUDENT_NUMBER=1
+      - CONTAINER_NAME=xss-lab-backend-student1
+      - APP_NAME=${APP_NAME:-XSS Attack Lab}
+      - DEPLOYMENT_ENV=${DEPLOYMENT_ENV:-local}
+      - DEPLOYMENT_REGION=${DEPLOYMENT_REGION:-local}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CORS_ENABLED=${CORS_ENABLED:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:5000,http://127.0.0.1:3000,http://127.0.0.1:5000}
+      - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED:-true}
+    expose:
+      - "5000"
+    volumes:
+      - ./logs/student1:/var/log/xss-lab:rw
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.xsslab.component=backend"
+      - "com.xsslab.student=1"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+  # Student 2 Backend Container
+  backend-student2:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+      target: app
+    image: xss-lab-backend:${APP_VERSION:-1.0.0}
+    container_name: xss-lab-backend-student2-${DEPLOYMENT_ENV:-local}
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=5000
+      - STUDENT_ID=student2
+      - STUDENT_NUMBER=2
+      - CONTAINER_NAME=xss-lab-backend-student2
+      - APP_NAME=${APP_NAME:-XSS Attack Lab}
+      - DEPLOYMENT_ENV=${DEPLOYMENT_ENV:-local}
+      - DEPLOYMENT_REGION=${DEPLOYMENT_REGION:-local}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CORS_ENABLED=${CORS_ENABLED:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:5000,http://127.0.0.1:3000,http://127.0.0.1:5000}
+      - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED:-true}
+    expose:
+      - "5000"
+    volumes:
+      - ./logs/student2:/var/log/xss-lab:rw
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.xsslab.component=backend"
+      - "com.xsslab.student=2"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+  # Student 3 Backend Container
+  backend-student3:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+      target: app
+    image: xss-lab-backend:${APP_VERSION:-1.0.0}
+    container_name: xss-lab-backend-student3-${DEPLOYMENT_ENV:-local}
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=5000
+      - STUDENT_ID=student3
+      - STUDENT_NUMBER=3
+      - CONTAINER_NAME=xss-lab-backend-student3
+      - APP_NAME=${APP_NAME:-XSS Attack Lab}
+      - DEPLOYMENT_ENV=${DEPLOYMENT_ENV:-local}
+      - DEPLOYMENT_REGION=${DEPLOYMENT_REGION:-local}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CORS_ENABLED=${CORS_ENABLED:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:5000,http://127.0.0.1:3000,http://127.0.0.1:5000}
+      - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED:-true}
+    expose:
+      - "5000"
+    volumes:
+      - ./logs/student3:/var/log/xss-lab:rw
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.xsslab.component=backend"
+      - "com.xsslab.student=3"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+  # Student 4 Backend Container
+  backend-student4:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+      target: app
+    image: xss-lab-backend:${APP_VERSION:-1.0.0}
+    container_name: xss-lab-backend-student4-${DEPLOYMENT_ENV:-local}
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=5000
+      - STUDENT_ID=student4
+      - STUDENT_NUMBER=4
+      - CONTAINER_NAME=xss-lab-backend-student4
+      - APP_NAME=${APP_NAME:-XSS Attack Lab}
+      - DEPLOYMENT_ENV=${DEPLOYMENT_ENV:-local}
+      - DEPLOYMENT_REGION=${DEPLOYMENT_REGION:-local}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CORS_ENABLED=${CORS_ENABLED:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:5000,http://127.0.0.1:3000,http://127.0.0.1:5000}
+      - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED:-true}
+    expose:
+      - "5000"
+    volumes:
+      - ./logs/student4:/var/log/xss-lab:rw
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.xsslab.component=backend"
+      - "com.xsslab.student=4"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+  # Student 5 Backend Container
+  backend-student5:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.backend
+      target: app
+    image: xss-lab-backend:${APP_VERSION:-1.0.0}
+    container_name: xss-lab-backend-student5-${DEPLOYMENT_ENV:-local}
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - PORT=5000
+      - STUDENT_ID=student5
+      - STUDENT_NUMBER=5
+      - CONTAINER_NAME=xss-lab-backend-student5
+      - APP_NAME=${APP_NAME:-XSS Attack Lab}
+      - DEPLOYMENT_ENV=${DEPLOYMENT_ENV:-local}
+      - DEPLOYMENT_REGION=${DEPLOYMENT_REGION:-local}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - CORS_ENABLED=${CORS_ENABLED:-true}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:5000,http://127.0.0.1:3000,http://127.0.0.1:5000}
+      - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED:-true}
+    expose:
+      - "5000"
+    volumes:
+      - ./logs/student5:/var/log/xss-lab:rw
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.xsslab.component=backend"
+      - "com.xsslab.student=5"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+  # Real Elgg Container - target for HTTP proxying from terminal-server.js
+  elgg:
+    image: elgg:10.9.0.5
+    container_name: xss-lab-elgg-${DEPLOYMENT_ENV:-local}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      ELGG_DB_HOST: mariadb
+      ELGG_DB_USER: elgg
+      ELGG_DB_PASSWORD: ${ELGG_DB_PASSWORD:?Set ELGG_DB_PASSWORD in .env}
+      ELGG_DB_NAME: elgg
+    ports:
+      - "${ELGG_PORT:-8080}:80"
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    labels:
+      - "com.xsslab.component=elgg"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+  mariadb:
+    image: mariadb:11.4
+    container_name: xss-lab-mariadb-${DEPLOYMENT_ENV:-local}
+    environment:
+      MARIADB_DATABASE: elgg
+      MARIADB_USER: elgg
+      MARIADB_PASSWORD: ${ELGG_DB_PASSWORD:?Set ELGG_DB_PASSWORD in .env}
+      MARIADB_ROOT_PASSWORD: ${ELGG_DB_ROOT_PASSWORD:?Set ELGG_DB_ROOT_PASSWORD in .env}
+    volumes:
+      - elgg-db-data:/var/lib/mysql
+    networks:
+      - xss-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    labels:
+      - "com.xsslab.component=database"
+      - "com.xsslab.environment=${DEPLOYMENT_ENV:-local}"
+
+networks:
+  xss-network:
+    driver: bridge
+    name: xss-network-${DEPLOYMENT_ENV:-local}
+
+volumes:
+  elgg-db-data:
